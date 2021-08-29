@@ -1,0 +1,8 @@
+name = "ImageViewer"
+uuid = "1bcbe981-3513-4fdc-b3a9-57bd56d6e973"
+authors = ["roflmaostc <fxw+git@mailbox.org>"]
+version = "0.1.0"
+
+[deps]
+ColorSchemes = "35d6a980-a343-548e-a6ea-1d62b119f2f4"
+GLMakie = "e9467ef8-e4e7-5192-8a1a-b1aee30e663a"

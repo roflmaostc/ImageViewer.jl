@@ -23,29 +23,25 @@ function imview(imgin; color_map_menu=true)
 
     # specialize for three dimensions
     if ndims(imgin) == 3
-        depth = Slider(fig[2,2, Top()], range=axes(imgin, 3))
-        rowsize!(fig.layout, 2, Fixed(10))
-      
-
-        img = lift(depth.value) do d 
-            return view(imgin, :, :, d)
-           #
-        end
-
+        # add some sliders
+        img = add_depth_slier(fig, (1,), imgin)
         img = add_γ_slider(gl[1,1], (1,), img)
         img = add_γ_slider(gl[2,1], (1,), img)
+  
         
+        # plot
         h = heatmap!(ax, img, interpolate=false, tellheight=true)
+
+        # add color map menu
         if color_map_menu
             cmap_menu = add_colormap_menu(gl[3,1], (1,))
             cmap = on(cmap_menu.selection) do s
                 h.colormap = s
             end
         end
+        # add color bar
         cb = Colorbar(fig[1, 3], h, tellheight=true)
-
         fix_sizes_to_img(fig, ax)
-
     end
    
     return fig
@@ -66,18 +62,20 @@ function add_γ_slider(gr, pos, img)
     return img
 end
 
+function add_depth_slier(gr, pos, img)
+    depth = Slider(gr[2,2, Top()], range=axes(img, 3))
+    rowsize!(gr.layout, 2, Fixed(10))
+
+    imgout = lift(depth.value) do d 
+            return view(img, :, :, d)
+    end
+
+    return imgout
+end
 
 function add_colormap_menu(gr, pos;
             cmap_options=["curl", "thermal", "roma", "gist_rainbow", "hsv", "twilight"]
         )
-       # ColorSchemes.curl.colors,
-       #               ColorSchemes.thermal.colors,
-       #               ColorSchemes.roma.colors,
-       #               ColorSchemes.gist_rainbow.colors,
-       #               ColorSchemes.hsv.colors,
-       #               ColorSchemes.twilight.colors,
-       #              ]
-
 
     Label(gr[pos..., 1, Top()], "Color Map")
     cmap = Menu(gr[pos..., 1], options=cmap_options)
@@ -101,23 +99,15 @@ end
 
 
 
-
-
-
-function make_slidergrid!(fig, sliders; digits=2)
-    lsgrid = labelslidergrid!(fig,
-                              sliders.labels,
-                              sliders.ranges,
-                              formats = [x -> "$(round(x, digits=digits))"],
-                              width = 50,
-                              tellheight=false
-            )
-
-    fig[2, 1] = lsgrid.layout
-
-    sliderobservables = [s.value for s in lsgrid.sliders]
+# precompilation try
+let 
+    while true
+        imview(randn(Float32, (5,5,5)))
+        imview(randn(Float64, (5,5,5)))
+        break
+    end
 end
 
-
+precompile(imview, (Array{Float32, 3}, Array{Float64, 3}))
 
 end # module

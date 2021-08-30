@@ -40,7 +40,7 @@ function imview(imgin; color_map_menu=true)
             end
         end
         # add color bar
-        cb = Colorbar(fig[1, 3], h, tellheight=true)
+        cb = Colorbar(fig[1, 3], h, tellheight=true, width = 20, ticklabelspace=30f0)
         fix_sizes_to_img(fig, ax)
     end
    
